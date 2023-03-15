@@ -77,6 +77,8 @@ func main() {
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.SetBorder(false)
 	table.SetRowLine(true)
+    table.SetCaption(true, "petrside 2023")
+
 
 	for _, i := range indices {
 		productInfo := productsInfo[i]

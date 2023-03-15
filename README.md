@@ -4,8 +4,12 @@
 # Installation 
 Make sure you are running ```go version 1.20.x```
 
-Import the project using ```import "github.com/petersid2022/skroutz-web-scraper-go"``` and follow that with ```go mod tidy```
+```
+https://github.com/petersid2022/skroutz-web-scraper-go.git
+cd skroutz-web-scraper-go
+go build .
+```
 
-Any input is very much accepted. Clone, Edit and make a new Pull Request freely. 
+Any input is very much accepted. Edit and make a new Pull Request freely. 
 
 Peter Sideris 2023

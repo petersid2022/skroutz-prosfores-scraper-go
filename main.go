@@ -85,8 +85,8 @@ func main() {
 
 		out := []string{
 			strings.TrimSpace(productInfo.name),
-			strings.TrimSpace(productInfo.newprice),
 			strings.TrimSpace(productInfo.oldprice + " €"),
+            strings.TrimSpace(productInfo.newprice),
 			link(productInfo.link, "link"),
 		}
 		table.Append(out)

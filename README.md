@@ -1,5 +1,5 @@
 # skroutz-web-scraper-go
- CLI based web scraper / API written in Go, that looks for any deals on skroutz.gr.
+ CLI based web scraper written in Go, that looks for any deals on skroutz.gr.
 
 # Installation 
 Make sure you are running ```go version 1.20.x```

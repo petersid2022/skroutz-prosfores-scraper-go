@@ -44,9 +44,7 @@ func link(x string, y string) string {
 func main() {
     var productsInfo []productInformation
 
-    c := colly.NewCollector(
-        colly.MaxDepth(2),
-    )
+    c := colly.NewCollector()
 
     c.OnHTML(".js-sku.cf.card", func(e *colly.HTMLElement) {
         productInfo := productInformation{}

@@ -5,7 +5,7 @@
 Make sure you are running ```go version 1.20.x```
 
 ```
-https://github.com/petersid2022/skroutz-web-scraper-go.git
+git clone https://github.com/petersid2022/skroutz-web-scraper-go.git
 cd skroutz-web-scraper-go
 go build .
 ```

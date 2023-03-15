@@ -21,7 +21,7 @@ go build .
 
 * Use a better HTML parsing library (GoQuery)
 
-Input is very much accepted. This is a ["Hello, World!"](https://en.wikipedia.org/wiki/%22Hello,_World!%22_program) program, so as you would expect there are a few* rough edges.
+Input is very much appreciated. This is a ["Hello, World!"](https://en.wikipedia.org/wiki/%22Hello,_World!%22_program) program, so as you would expect there are a few* rough edges.
 Distribute, edit and make Pull Requests freely. 
 
 Peter Sideris 2023

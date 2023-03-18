@@ -9,6 +9,7 @@ import (
     "os"
     "strings"
     "time"
+    "flag"
 
     "github.com/gocolly/colly"
     "github.com/olekukonko/tablewriter"
@@ -44,6 +45,10 @@ func link(x string, y string) string {
 }
 
 func main() {
+    startTime := time.Now()
+
+    categoryPtr := flag.String("category", "Recommended", "[Recommended], [price_asc], [price_desc], [newest], [pricedrop]")
+
     var productsInfo []productInformation = make([]productInformation, 0, 10)
 
     c := colly.NewCollector()
@@ -62,7 +67,9 @@ func main() {
         productsInfo = append(productsInfo, productInfo)
     })
 
-    c.Visit("https://www.skroutz.gr/prosfores?order_by=recommended&recent=1")
+    c.Visit("https://www.skroutz.gr/prosfores?order_by=" + *categoryPtr + "&recent=1")
+    flag.Parse()
+    elapsedTime := time.Since(startTime) 
 
     rand.Seed(time.Now().UnixNano())
     numProductsToPrint := 5
@@ -77,20 +84,33 @@ func main() {
     table.SetAlignment(tablewriter.ALIGN_LEFT)
     table.SetBorder(false)
     table.SetRowLine(true)
-    table.SetCaption(true, "petrside 2023")
+    table.SetCaption(true, "petrside 2023 / Category: " + *categoryPtr + " / Request completed in " + elapsedTime.String())
 
-
-    for _, i := range indices {
-        productInfo := productsInfo[i]
-
-        out := []string{
-            strings.TrimSpace(productInfo.name),
-            strings.TrimSpace(productInfo.oldprice + " €"),
-            strings.TrimSpace(productInfo.newprice),
-            link(productInfo.link, "link"),
+    if *categoryPtr == "Recommended"{
+        for _, i := range indices {
+            productInfo := productsInfo[i]
+    
+            out := []string{
+                strings.TrimSpace(productInfo.name),
+                strings.TrimSpace(productInfo.oldprice + " €"),
+                strings.TrimSpace(productInfo.newprice),
+                link(productInfo.link, "link"),
+            }
+            table.Append(out)
         }
-        table.Append(out)
-    }
-    table.Render()
-}
+        table.Render()
+    } else {
+        for i := 0; i < len(productsInfo); i++ {
+            productInfo := productsInfo[i]
+            out := []string{
+                strings.TrimSpace(productInfo.name),
+                strings.TrimSpace(productInfo.oldprice + " €"),
+                strings.TrimSpace(productInfo.newprice),
+                link(productInfo.link, "link"),
+            }
+            table.Append(out)
+        }
+        table.Render()
 
+    }
+}

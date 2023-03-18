@@ -24,7 +24,7 @@ go build .
 * Use a better HTML parsing library (GoQuery)
 
 # Things I am going to implement
-* Command-Line flags (change category, add filters, prices ascending/descending etc.)
+* ~~Command-Line flags (change category, add filters, prices ascending/descending etc.)~~ [[f155812]](https://github.com/petersid2022/skroutz-web-scraper-go/commit/f155812c9a3daa9e19d77b2e0e172f07b4546021)
 
 * Add colors.
 

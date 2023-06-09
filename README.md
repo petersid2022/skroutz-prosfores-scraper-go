@@ -15,7 +15,7 @@ go build .
 
 * Use goroutines (Concurrency)
 
-* Use a database (GORM)
+* Reuse HTTP client, instead of creating a new one for every request. 
 
 * Use a caching mechanism
 
@@ -23,10 +23,12 @@ go build .
 
 * Use a better HTML parsing library (GoQuery)
 
-# Things I am going to implement
+# Things I am working on  
 * ~~Command-Line flags (change category, add filters, prices ascending/descending etc.)~~ [[f155812]](https://github.com/petersid2022/skroutz-web-scraper-go/commit/f155812c9a3daa9e19d77b2e0e172f07b4546021)
 
-* Add colors.
+* Use goroutines (Concurrency)
+
+* Reuse HTTP client, instead of creating a new one for every request. 
 
 
 Input is very much appreciated. This is a ["Hello, World!"](https://en.wikipedia.org/wiki/%22Hello,_World!%22_program) program, so as you would expect there are a few* rough edges.

@@ -13,7 +13,7 @@ go build .
 
 # Possible Optimizations
 
-* Use goroutines (Concurrency)
+* ~~Use goroutines (Concurrency)~~
 
 * Reuse HTTP client, instead of creating a new one for every request. 
 

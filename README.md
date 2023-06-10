@@ -7,7 +7,7 @@ Make sure you are running ```go version 1.20.x```
 ```
 git clone https://github.com/petersid2022/skroutz-web-scraper-go.git
 cd skroutz-web-scraper-go
-go build .
+go build ./cmd/scraper/main.go 
 ```
 **TIP:** Move the binary to ```~/.local/bin```. That way, you can execute the command from the terminal, wherever you are!
 

@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gocolly/colly"
@@ -17,6 +18,11 @@ import (
 
 type productInformation struct {
 	name, link, oldprice, newprice string
+}
+
+type result struct {
+	productInfo productInformation
+	err         error
 }
 
 func shortenURL(longURL string) (shortURL string, err error) {
@@ -44,14 +50,8 @@ func link(x string, y string) string {
 	return out
 }
 
-func main() {
-	startTime := time.Now()
-
-	categoryPtr := flag.String("f", "Recommended", "[Recommended], [price_asc], [price_desc], [newest], [pricedrop]")
-
-	var productsInfo []productInformation = make([]productInformation, 0, 10)
-
-	c := colly.NewCollector()
+func scrapeProductInfo(c *colly.Collector, category string, wg *sync.WaitGroup, results chan<- result) {
+	defer wg.Done()
 
 	c.OnHTML(".sku-card.js-sku", func(e *colly.HTMLElement) {
 		productInfo := productInformation{}
@@ -64,11 +64,46 @@ func main() {
 		productInfo.oldprice = strings.Split(productInfo.oldprice, " ")[0]
 		productInfo.newprice = e.ChildText(".product-link.js-sku-link")
 
-		productsInfo = append(productsInfo, productInfo)
+		results <- result{
+			productInfo: productInfo,
+			err:         nil,
+		}
 	})
 
-	c.Visit("https://www.skroutz.gr/prosfores?order_by=" + *categoryPtr + "&recent=1")
+	c.Visit("https://www.skroutz.gr/prosfores?order_by=" + category + "&recent=1")
+}
+
+func main() {
+	startTime := time.Now()
+
+	categoryPtr := flag.String("f", "Recommended", "[Recommended], [price_asc], [price_desc], [newest], [pricedrop]")
+
+	var productsInfo []productInformation
+	c := colly.NewCollector()
+
+	var wg sync.WaitGroup
+	results := make(chan result)
+
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	numWorkers := 10 
+	for i := 0; i < numWorkers; i++ {
+		wg.Add(1)
+		go scrapeProductInfo(c.Clone(), *categoryPtr, &wg, results)
+	}
+
 	flag.Parse()
+
+	for res := range results {
+		if res.err != nil {
+			fmt.Println(res.err)
+		} else {
+			productsInfo = append(productsInfo, res.productInfo)
+		}
+	}
 
 	rand.Seed(time.Now().UnixNano())
 	numProductsToPrint := 5
@@ -115,3 +150,4 @@ func main() {
 	elapsedTime := time.Since(startTime)
 	fmt.Println("Elapsed time: " + elapsedTime.String())
 }
+

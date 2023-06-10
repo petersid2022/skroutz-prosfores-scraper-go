@@ -26,7 +26,7 @@ go build .
 # Things I am working on  
 * ~~Command-Line flags (change category, add filters, prices ascending/descending etc.)~~ [[f155812]](https://github.com/petersid2022/skroutz-web-scraper-go/commit/f155812c9a3daa9e19d77b2e0e172f07b4546021)
 
-* Use goroutines (Concurrency)
+* ~~Use goroutines (Concurrency)~~
 
 * Reuse HTTP client, instead of creating a new one for every request. 
 

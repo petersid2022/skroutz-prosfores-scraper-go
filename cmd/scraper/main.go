@@ -89,7 +89,7 @@ func main() {
 		close(results)
 	}()
 
-	numWorkers := 10 
+	numWorkers := 10
 	for i := 0; i < numWorkers; i++ {
 		wg.Add(1)
 		go scrapeProductInfo(c.Clone(), *categoryPtr, &wg, results)
@@ -114,9 +114,12 @@ func main() {
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Name", "Old Price", "New Price", "Link"})
-	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
-	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.SetBorder(false)
+    table.SetColWidth(50)
+	table.SetHeaderColor(tablewriter.Colors{tablewriter.Bold, tablewriter.FgHiRedColor},
+		tablewriter.Colors{tablewriter.Bold, tablewriter.FgHiRedColor},
+		tablewriter.Colors{tablewriter.Bold, tablewriter.FgHiRedColor},
+		tablewriter.Colors{tablewriter.Bold, tablewriter.FgHiRedColor})
+	table.SetBorder(true)
 	table.SetRowLine(true)
 	table.SetCaption(true, "petrside 2023 / Category: "+*categoryPtr)
 
@@ -150,4 +153,3 @@ func main() {
 	elapsedTime := time.Since(startTime)
 	fmt.Println("Elapsed time: " + elapsedTime.String())
 }
-

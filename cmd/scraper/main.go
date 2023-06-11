@@ -114,12 +114,12 @@ func main() {
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Name", "Old Price", "New Price", "Link"})
-    table.SetColWidth(50)
+	table.SetColWidth(50)
 	table.SetHeaderColor(tablewriter.Colors{tablewriter.Bold, tablewriter.FgHiRedColor},
 		tablewriter.Colors{tablewriter.Bold, tablewriter.FgHiRedColor},
 		tablewriter.Colors{tablewriter.Bold, tablewriter.FgHiRedColor},
 		tablewriter.Colors{tablewriter.Bold, tablewriter.FgHiRedColor})
-	table.SetBorder(true)
+	table.SetBorder(false)
 	table.SetRowLine(true)
 	table.SetCaption(true, "petrside 2023 / Category: "+*categoryPtr)
 

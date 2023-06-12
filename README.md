@@ -17,11 +17,11 @@ go build ./cmd/scraper/main.go
 Options:
 
 ```
--h, --help                   Output usage information
--f, [String]        Set filtering options: [Recommended], [price_asc], [price_desc], [newest]
--p, [Number]         Set the number of pages to scrape (default: 5)
--n, [Number]      Set the number of products to print when filtering_option=Recommended (default: 5)
--w, [Number]       Set the number of workers (default: 10)
+-h, --help      Output usage information
+-f, [String]    Set filtering options: [Recommended], [price_asc], [price_desc], [newest]
+-p, [Number]    Set the number of pages to scrape (default: 5)
+-n, [Number]    Set the number of products to print when filtering_option=Recommended (default: 5)
+-w, [Number]    Set the number of workers (default: 10)
 ```
 
 ## Possible Optimizations

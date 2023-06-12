@@ -44,16 +44,15 @@ func link(x string, y string) string {
 	if err != nil {
 		fmt.Println(err)
 	}
-    //create a hyperlink in the terminal
+	//create a hyperlink in the terminal
 	out := fmt.Sprintf("\x1b]8;;%s\x1b\\%s\x1b]8;;\x1b\\", shortLink, y)
 	return out
 }
 
-func scrapeProductInfo(c *colly.Collector, category string, wg *sync.WaitGroup, results chan<- result) {
+func scrapeProductInfo(c *colly.Collector, category string, wg *sync.WaitGroup, results chan<- result, scrapedPages int) {
 	defer wg.Done()
-    scrapedPages := 5
 
-    //scrape the product information
+	//scrape the product information
 	c.OnHTML(".sku-card.js-sku", func(e *colly.HTMLElement) {
 		productInfo := productInformation{}
 		productInfo.name = e.ChildAttr("a", "title")
@@ -70,7 +69,7 @@ func scrapeProductInfo(c *colly.Collector, category string, wg *sync.WaitGroup, 
 		}
 	})
 
-    //scrape the number of pages
+	//scrape the number of pages
 	for i := 1; i <= scrapedPages; i++ {
 		url := "https://www.skroutz.gr/prosfores?order_by=" + category + "&recent=1&page=" + strconv.Itoa(i)
 		c.Visit(url)
@@ -78,16 +77,25 @@ func scrapeProductInfo(c *colly.Collector, category string, wg *sync.WaitGroup, 
 }
 
 func main() {
-    c := colly.NewCollector()
-    startTime := time.Now()
+	c := colly.NewCollector()
+	startTime := time.Now()
 
-    //create a flag to choose the category
-    categoryPtr := flag.String("f", "Recommended", "[Recommended], [price_asc], [price_desc], [newest]")
+	//create a flag to choose the category
+	categoryPtr := flag.String("f", "Recommended", "[Recommended], [price_asc], [price_desc], [newest]")
 
-    //create a slice to store the product information
+	//create a flag to choose the number of pages to scrapedPages
+	pagesPtr := flag.Int("p", 5, "number of pages to scrape")
+
+	//create a flag to choose the number of products to Println
+	productsPtr := flag.Int("n", 5, "number of products to print")
+
+	//create a flag to choose the number of numWorkers
+	numWorkersPtr := flag.Int("w", 10, "number of workers")
+
+	//create a slice to store the product information
 	var productsInfo []productInformation
 
-    //create a waitgroup to wait for all the goroutines to finish and a channel to store the results
+	//create a waitgroup to wait for all the goroutines to finish and a channel to store the results
 	var wg sync.WaitGroup
 	results := make(chan result)
 
@@ -96,16 +104,14 @@ func main() {
 		close(results)
 	}()
 
-    //create 10 goroutines to scrape the product information
-	numWorkers := 10
-	for i := 0; i < numWorkers; i++ {
+	for i := 0; i < *numWorkersPtr; i++ {
 		wg.Add(1)
-		go scrapeProductInfo(c.Clone(), *categoryPtr, &wg, results)
+		go scrapeProductInfo(c.Clone(), *categoryPtr, &wg, results, *pagesPtr)
 	}
 
 	flag.Parse()
 
-    //store the results in the slice
+	//store the results in the slice
 	for res := range results {
 		if res.err != nil {
 			fmt.Println(res.err)
@@ -115,14 +121,14 @@ func main() {
 	}
 
 	rand.Seed(time.Now().UnixNano())
-	numProductsToPrint := 5
+	numProductsToPrint := *productsPtr 
 	if len(productsInfo) < numProductsToPrint {
 		numProductsToPrint = len(productsInfo)
 	}
 	indices := rand.Perm(len(productsInfo))[:numProductsToPrint]
 
-    //create a table to print the results, currently there is a bug in the TableWriter library that 
-    //does not render the border correctly if there hyperlinks in the table. see issue #212
+	//create a table to print the results, currently there is a bug in the TableWriter library that
+	//does not render the border correctly if there hyperlinks in the table. see issue #212
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Name", "Old Price", "New Price", "Link"})
 	table.SetHeaderColor(tablewriter.Colors{tablewriter.Bold, tablewriter.FgHiRedColor},
@@ -134,8 +140,8 @@ func main() {
 	table.SetCenterSeparator("|")
 	table.SetCaption(true, "petrside 2023 / Category: "+*categoryPtr)
 
-    //if no flags are given (i.e. recommended category) print 5 random products,
-    //else, if there are flags being given, print all the products
+	//if no flags are given (i.e. recommended category) print 5 random products,
+	//else, if there are flags being given, print all the products
 	if *categoryPtr == "Recommended" {
 		for _, i := range indices {
 			productInfo := productsInfo[i]
@@ -161,7 +167,7 @@ func main() {
 		}
 	}
 
-    //print the table and the elapsed time
+	//print the table and the elapsed time
 	table.Render()
 	elapsedTime := time.Since(startTime)
 	fmt.Println("Elapsed time: " + elapsedTime.String())

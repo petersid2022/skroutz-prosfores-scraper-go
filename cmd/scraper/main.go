@@ -70,10 +70,8 @@ func scrapeProductInfo(c *colly.Collector, category string, wg *sync.WaitGroup, 
 	})
 
 	//scrape the number of pages
-	for i := 1; i <= scrapedPages; i++ {
-		url := "https://www.skroutz.gr/prosfores?order_by=" + category + "&recent=1&page=" + strconv.Itoa(i)
-		c.Visit(url)
-	}
+	url := "https://www.skroutz.gr/prosfores?order_by=" + category + "&recent=1&page=" + strconv.Itoa(scrapedPages)
+	c.Visit(url)
 }
 
 func main() {
@@ -121,7 +119,7 @@ func main() {
 	}
 
 	rand.Seed(time.Now().UnixNano())
-	numProductsToPrint := *productsPtr 
+	numProductsToPrint := *productsPtr
 	if len(productsInfo) < numProductsToPrint {
 		numProductsToPrint = len(productsInfo)
 	}

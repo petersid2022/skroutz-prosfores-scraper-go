@@ -14,7 +14,8 @@ import (
 	"time"
 
 	"github.com/gocolly/colly"
-	"github.com/olekukonko/tablewriter"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 type productInformation struct {
@@ -125,48 +126,41 @@ func main() {
 	}
 	indices := rand.Perm(len(productsInfo))[:numProductsToPrint]
 
-	//create a table to print the results, currently there is a bug in the TableWriter library that
-	//does not render the border correctly if there hyperlinks in the table. see issue #212
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Name", "Old Price", "New Price", "Link"})
-	table.SetHeaderColor(tablewriter.Colors{tablewriter.Bold, tablewriter.FgHiRedColor},
-		tablewriter.Colors{tablewriter.Bold, tablewriter.FgHiRedColor},
-		tablewriter.Colors{tablewriter.Bold, tablewriter.FgHiRedColor},
-		tablewriter.Colors{tablewriter.Bold, tablewriter.FgHiRedColor})
-	table.SetBorder(false)
-	table.SetRowLine(true)
-	table.SetCenterSeparator("|")
-	table.SetCaption(true, "petrside 2023 / Category: "+*categoryPtr)
+	// Create a new table
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.SetStyle(table.StyleLight)
 
-	//if no flags are given (i.e. recommended category) print 5 random products,
-	//else, if there are flags being given, print all the products
-	if *categoryPtr == "Recommended" {
-		for _, i := range indices {
-			productInfo := productsInfo[i]
+	// Add table headers
+	t.AppendHeader(table.Row{"Name", "Old Price", "New Price", "Link"})
 
-			out := []string{
-				strings.TrimSpace(productInfo.name),
-				strings.TrimSpace(productInfo.oldprice + " €"),
-				strings.TrimSpace(productInfo.newprice),
-				link(productInfo.link, "link"),
-			}
-			table.Append(out)
-		}
-	} else {
-		for i := 0; i < len(productsInfo); i++ {
-			productInfo := productsInfo[i]
-			out := []string{
-				strings.TrimSpace(productInfo.name),
-				strings.TrimSpace(productInfo.oldprice + " €"),
-				strings.TrimSpace(productInfo.newprice),
-				link(productInfo.link, "link"),
-			}
-			table.Append(out)
-		}
+	// Add table rows
+	for _, i := range indices {
+		productInfo := productsInfo[i]
+
+		row := make([]interface{}, 4)
+		row[0] = strings.TrimSpace(productInfo.name)
+        t.AppendSeparator()
+		row[1] = strings.TrimSpace(productInfo.oldprice + " €")
+        t.AppendSeparator()
+		row[2] = strings.TrimSpace(productInfo.newprice)
+        t.AppendSeparator()
+		row[3] = link(productInfo.link, "link")
+
+		t.AppendRow(row)
 	}
 
-	//print the table and the elapsed time
-	table.Render()
+	// Render the table
+	t.SetStyle(table.StyleRounded)
+	t.SetColumnConfigs([]table.ColumnConfig{
+		{Number: 1, AlignHeader: text.AlignCenter, WidthMax: 48},
+		{Number: 2, AlignHeader: text.AlignCenter, WidthMax: 48},
+		{Number: 3, AlignHeader: text.AlignCenter, WidthMax: 48},
+		{Number: 4, AlignHeader: text.AlignCenter, WidthMax: 48},
+	})
+	t.SetCaption("petrside 2023 / Category: " + *categoryPtr)
+	t.Render()
+
 	elapsedTime := time.Since(startTime)
 	fmt.Println("Elapsed time: " + elapsedTime.String())
 }

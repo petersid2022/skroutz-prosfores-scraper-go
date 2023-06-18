@@ -1,7 +1,7 @@
 # skroutz-prosfores-scraper-go
 CLI based web scraper written in Go, that scrapes www.skroutz.gr/prosfores for any new deals.
 
-![image](https://github.com/petersid2022/skroutz-prosfores-scraper-go/assets/49149872/2422296d-4cad-4ea7-986d-18d26d536969)
+![image](https://github.com/petersid2022/skroutz-prosfores-scraper-go/assets/49149872/d33a6caa-b0f0-420f-a778-40f1938d240b)
 ## Installation 
 Make sure you are running ```go version 1.20.x```
 

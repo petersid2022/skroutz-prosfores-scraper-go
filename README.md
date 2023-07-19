@@ -2,6 +2,7 @@
 CLI based web scraper written in Go, that scrapes www.skroutz.gr/prosfores for any new deals.
 
 ![image](./examples/demo.gif)
+> Gif made using [vhs](https://github.com/charmbracelet/vhs) 
 ## Installation 
 Make sure you are running ```go version 1.20.x```
 

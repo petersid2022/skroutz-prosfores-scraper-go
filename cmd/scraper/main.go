@@ -140,11 +140,11 @@ func main() {
 
 		row := make([]interface{}, 4)
 		row[0] = strings.TrimSpace(productInfo.name)
-        t.AppendSeparator()
+		t.AppendSeparator()
 		row[1] = strings.TrimSpace(productInfo.oldprice + " €")
-        t.AppendSeparator()
+		t.AppendSeparator()
 		row[2] = strings.TrimSpace(productInfo.newprice)
-        t.AppendSeparator()
+		t.AppendSeparator()
 		row[3] = link(productInfo.link, "link")
 
 		t.AppendRow(row)

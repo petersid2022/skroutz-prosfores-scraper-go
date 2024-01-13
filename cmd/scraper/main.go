@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	//"io"
 	"math/rand"
-	"net/http"
+	//"net/http"
 	"net/url"
 	"os"
 	"strconv"
@@ -27,26 +27,27 @@ type result struct {
 	err         error
 }
 
-func shortenURL(longURL string) (shortURL string, err error) {
-	resp, err := http.Get("http://tinyurl.com/api-create.php?url=" + longURL)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-	return string(body), nil
-}
 
-func link(x string, y string) string {
-	shortLink, err := shortenURL(x)
-	if err != nil {
-		fmt.Println(err)
-	}
+// func shortenURL(longURL string) (shortURL string, err error) {
+//     resp, err := http.Get("http://tinyurl.com/api-create.php?url=" + longURL)
+//     if err != nil {
+//         return "", err
+//     }
+//     defer resp.Body.Close()
+//     body, err := io.ReadAll(resp.Body)
+//     if err != nil {
+//         return "", err
+//     }
+//     return string(body), nil
+// }
+
+func createLink(x string, y string) string {
+	// shortLink, err := shortenURL(x)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 	//create a hyperlink in the terminal
-	out := fmt.Sprintf("\x1b]8;;%s\x1b\\%s\x1b]8;;\x1b\\", shortLink, y)
+	out := fmt.Sprintf("\x1b]8;;%s\x1b\\%s\x1b]8;;\x1b\\", x, y)
 	return out
 }
 
@@ -71,7 +72,7 @@ func scrapeProductInfo(c *colly.Collector, category string, wg *sync.WaitGroup, 
 	})
 
 	//scrape the number of pages
-	url := "https://www.skroutz.gr/prosfores?order_by=" + category + "&recent=1&page=" + strconv.Itoa(scrapedPages)
+	url := "https://www.skroutz.gr/price-drops?order_by=" + category + "&recent=1&page=" + strconv.Itoa(scrapedPages)
 	c.Visit(url)
 }
 
@@ -119,7 +120,6 @@ func main() {
 		}
 	}
 
-	rand.Seed(time.Now().UnixNano())
 	numProductsToPrint := *productsPtr
 	if len(productsInfo) < numProductsToPrint {
 		numProductsToPrint = len(productsInfo)
@@ -145,13 +145,14 @@ func main() {
 		t.AppendSeparator()
 		row[2] = strings.TrimSpace(productInfo.newprice)
 		t.AppendSeparator()
-		row[3] = link(productInfo.link, "link")
+		row[3] = createLink(productInfo.link, "link")
 
 		t.AppendRow(row)
 	}
 
 	// Render the table
 	t.SetStyle(table.StyleRounded)
+    t.SetAutoIndex(true)
 	t.SetColumnConfigs([]table.ColumnConfig{
 		{Number: 1, AlignHeader: text.AlignCenter, WidthMax: 48},
 		{Number: 2, AlignHeader: text.AlignCenter, WidthMax: 48},

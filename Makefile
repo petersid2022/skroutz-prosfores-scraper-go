@@ -1,2 +1,2 @@
 default:
-	go build -o main cmd/scraper/main.go
+	go build -o skroutz cmd/scraper/main.go

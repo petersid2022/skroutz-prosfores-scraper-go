@@ -1,11 +1,11 @@
-package main
+package main 
 
 import (
+    //"errors"
 	"flag"
 	"fmt"
-	//"io"
+	"log"
 	"math/rand"
-	//"net/http"
 	"net/url"
 	"os"
 	"strconv"
@@ -26,7 +26,6 @@ type result struct {
 	productInfo productInformation
 	err         error
 }
-
 
 // func shortenURL(longURL string) (shortURL string, err error) {
 //     resp, err := http.Get("http://tinyurl.com/api-create.php?url=" + longURL)
@@ -59,7 +58,10 @@ func scrapeProductInfo(c *colly.Collector, category string, wg *sync.WaitGroup, 
 		productInfo := productInformation{}
 		productInfo.name = e.ChildAttr("a", "title")
 		productInfo.link = "https://skroutz.gr" + e.ChildAttr("a", "href")
-		u, _ := url.Parse(productInfo.link)
+		u, err := url.Parse(productInfo.link)
+		if err != nil {
+			log.Fatalf("Failed to parse url: %s\n", err)
+		}
 		productInfo.link = "https://www.skroutz.gr" + u.Path
 		productInfo.oldprice = e.ChildText(".sku-card-info")
 		productInfo.oldprice = strings.Split(productInfo.oldprice, " ")[0]
@@ -74,6 +76,14 @@ func scrapeProductInfo(c *colly.Collector, category string, wg *sync.WaitGroup, 
 	//scrape the number of pages
 	url := "https://www.skroutz.gr/price-drops?order_by=" + category + "&recent=1&page=" + strconv.Itoa(scrapedPages)
 	c.Visit(url)
+}
+
+func replaceNaN(x string) string {
+	out := ""
+	x = strings.ReplaceAll(x, ".", "")
+	x = strings.ReplaceAll(x, ",", ".")
+	out = x
+	return out
 }
 
 func main() {
@@ -114,7 +124,7 @@ func main() {
 	//store the results in the slice
 	for res := range results {
 		if res.err != nil {
-			fmt.Println(res.err)
+			log.Fatalf("Failed to store the results in the slice: %s\n", res.err)
 		} else {
 			productsInfo = append(productsInfo, res.productInfo)
 		}
@@ -138,6 +148,21 @@ func main() {
 	for _, i := range indices {
 		productInfo := productsInfo[i]
 
+		newOldPrice := replaceNaN(productInfo.oldprice)
+		newNewPrice := replaceNaN(productInfo.newprice)
+
+		oldprice_val, err := strconv.ParseFloat(strings.Split(newOldPrice, " ")[0], 64)
+		if err != nil {
+			log.Fatalf("Failed to parse oldprice value: %s\n", err)
+		}
+
+		newprice_val, err := strconv.ParseFloat(strings.Split(newNewPrice, " ")[0], 64)
+		if err != nil {
+			log.Fatalf("Failed to parse oldprice value: %s\n", err)
+		}
+
+		productInfo.newprice += fmt.Sprintf("\n(-%.2f%%)", (100*(oldprice_val - newprice_val)/oldprice_val))
+
 		row := make([]interface{}, 4)
 		row[0] = strings.TrimSpace(productInfo.name)
 		t.AppendSeparator()
@@ -152,14 +177,14 @@ func main() {
 
 	// Render the table
 	t.SetStyle(table.StyleRounded)
-    t.SetAutoIndex(true)
+	t.SetAutoIndex(true)
 	t.SetColumnConfigs([]table.ColumnConfig{
 		{Number: 1, AlignHeader: text.AlignCenter, WidthMax: 48},
 		{Number: 2, AlignHeader: text.AlignCenter, WidthMax: 48},
 		{Number: 3, AlignHeader: text.AlignCenter, WidthMax: 48},
 		{Number: 4, AlignHeader: text.AlignCenter, WidthMax: 48},
 	})
-	t.SetCaption("petrside 2023 / Category: " + *categoryPtr)
+	t.SetCaption("petrside 2024 / Category: " + *categoryPtr)
 	t.Render()
 
 	elapsedTime := time.Since(startTime)

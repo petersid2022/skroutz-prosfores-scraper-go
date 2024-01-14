@@ -3,15 +3,15 @@ CLI based web scraper written in Go, that scrapes www.skroutz.gr/price-drops for
 
 ![image](./examples/demo.gif)
 > Gif made using [vhs](https://github.com/charmbracelet/vhs) 
-## Installation 
+## Installation using Make
 Make sure you are running ```go version 1.20.x```
 
 ```bash
 git clone https://github.com/petersid2022/skroutz-prosfores-scraper-go.git
 cd skroutz-prosfores-scraper-go
-go build ./cmd/scraper/main.go 
+make
 ```
-**TIP:** Move the binary to ```~/.local/bin```. That way, you can execute the command from the terminal, wherever you are!
+**Pro Tip:** Place the binary in the ```~/.local/bin``` directory. This enables you to run the command from the terminal regardless of your location!
 
 ## CLI Usage
 ```skroutz [Options]```

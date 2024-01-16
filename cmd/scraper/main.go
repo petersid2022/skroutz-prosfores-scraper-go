@@ -1,7 +1,7 @@
-package main 
+package main
 
 import (
-    //"errors"
+	//"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -45,7 +45,7 @@ func createLink(x string, y string) string {
 	// if err != nil {
 	// 	fmt.Println(err)
 	// }
-	//create a hyperlink in the terminal
+	// create a hyperlink in the terminal
 	out := fmt.Sprintf("\x1b]8;;%s\x1b\\%s\x1b]8;;\x1b\\", x, y)
 	return out
 }
@@ -53,7 +53,7 @@ func createLink(x string, y string) string {
 func scrapeProductInfo(c *colly.Collector, category string, wg *sync.WaitGroup, results chan<- result, scrapedPages int) {
 	defer wg.Done()
 
-	//scrape the product information
+	// scrape the product information
 	c.OnHTML(".sku-card.js-sku", func(e *colly.HTMLElement) {
 		productInfo := productInformation{}
 		productInfo.name = e.ChildAttr("a", "title")
@@ -73,7 +73,7 @@ func scrapeProductInfo(c *colly.Collector, category string, wg *sync.WaitGroup, 
 		}
 	})
 
-	//scrape the number of pages
+	// scrape the number of pages
 	url := "https://www.skroutz.gr/price-drops?order_by=" + category + "&recent=1&page=" + strconv.Itoa(scrapedPages)
 	c.Visit(url)
 }
@@ -90,22 +90,22 @@ func main() {
 	c := colly.NewCollector()
 	startTime := time.Now()
 
-	//create a flag to choose the category
+	// create a flag to choose the category
 	categoryPtr := flag.String("f", "Recommended", "[Recommended], [price_asc], [price_desc], [newest]")
 
-	//create a flag to choose the number of pages to scrapedPages
+	// create a flag to choose the number of pages to scrapedPages
 	pagesPtr := flag.Int("p", 5, "number of pages to scrape")
 
-	//create a flag to choose the number of products to Println
+	// create a flag to choose the number of products to Println
 	productsPtr := flag.Int("n", 5, "number of products to print")
 
-	//create a flag to choose the number of numWorkers
+	// create a flag to choose the number of numWorkers
 	numWorkersPtr := flag.Int("w", 10, "number of workers")
 
-	//create a slice to store the product information
+	// create a slice to store the product information
 	var productsInfo []productInformation
 
-	//create a waitgroup to wait for all the goroutines to finish and a channel to store the results
+	// create a waitgroup to wait for all the goroutines to finish and a channel to store the results
 	var wg sync.WaitGroup
 	results := make(chan result)
 
@@ -121,7 +121,7 @@ func main() {
 
 	flag.Parse()
 
-	//store the results in the slice
+	// store the results in the slice
 	for res := range results {
 		if res.err != nil {
 			log.Fatalf("Failed to store the results in the slice: %s\n", res.err)
@@ -161,7 +161,7 @@ func main() {
 			log.Fatalf("Failed to parse oldprice value: %s\n", err)
 		}
 
-		productInfo.newprice += fmt.Sprintf("\n(-%.2f%%)", (100*(oldprice_val - newprice_val)/oldprice_val))
+		productInfo.newprice += fmt.Sprintf("\n(-%.2f%%)", (100 * (oldprice_val - newprice_val) / oldprice_val))
 
 		row := make([]interface{}, 4)
 		row[0] = strings.TrimSpace(productInfo.name)
